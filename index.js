@@ -7,9 +7,11 @@ const app = express();
 const server = http.createServer(app);
 const Maincontroller = require("./controllers/main");
 const Authcontroller = require("./controllers/auth");
-const dbconnection = require("./utliz/dbConnection");
+const mongoose = require("mongoose");
+require("dotenv").config();
+// const dbconnection = require("./utliz/dbConnection");
 
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(morgan("tiny"));
@@ -17,8 +19,28 @@ app.use(morgan("tiny"));
 app.use(Maincontroller);
 app.use(Authcontroller);
 
-dbconnection();
-server.listen(3001);
-server.on("listening", () => {
-  console.log("server is up...");
-});
+const start = async () => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI);
+      console.log("connected to Database...");
+      server.listen(3001);
+      server.on("listening", () => {
+        console.log("server is up...");
+      });
+
+      return;
+    }
+    console.log("alredy connected to Database...");
+    server.listen(3001);
+    server.on("listening", () => {
+      console.log("server is up...");
+    });
+    return;
+  } catch (error) {
+    console.log(error.message);
+    process.exit(1);
+  }
+};
+
+start();
