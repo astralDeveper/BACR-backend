@@ -32,7 +32,7 @@ const start = async () => {
       return;
     }
     console.log("alredy connected to Database...");
-    server.listen(3001);
+    server.listen(3000);
     server.on("listening", () => {
       console.log("server is up...");
     });
