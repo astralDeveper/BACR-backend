@@ -5,8 +5,8 @@ const bodyparser = require("body-parser");
 const morgan = require("morgan");
 const app = express();
 const server = http.createServer(app);
-const controller = require("./controllers");
-const dbconnection = require("./utliz/dbConnection");
+const controller = require("./controllers/auth.js");
+const dbconnection = require("./utliz/dbConnection.js");
 
 app.use(cors({origin:"*"}));
 app.use(bodyparser.urlencoded({extended:false}));
