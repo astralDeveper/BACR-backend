@@ -6,6 +6,8 @@ const controller = require("./controllers/auth.js");
 const dbconnection = require("./utliz/dbConnection.js");
 const app = express();
 
+const port = process.env.PORT || 3000;
+
 app.use(cors({origin:"*"}));
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
@@ -14,9 +16,8 @@ app.use(morgan("tiny"));
 app.use(controller);
 
 
-app.listen(3000);
-app.on("listening", ()=>{
-    console.log("server is up...");
-})
+app.listen(port, "0.0.0.0", function () {
+    console.log('server is up...')
+    dbconnection();
+});
 
-dbconnection();
