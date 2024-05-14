@@ -14,6 +14,12 @@ app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
 app.use(morgan("tiny"));
 
+app.get("/",(req,res)=>{
+    return res.status(200).json({
+        msg:"server is up"
+    })
+})
+
 app.use("/auth", AuthController);
 app.use("/api", CrudController);
 
