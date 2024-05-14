@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const morgan = require("morgan");
-const controller = require("./controllers/auth.js");
+const AuthController = require("./controllers/auth.js");
+const CrudController = require("./controllers/auth.js");
 const dbconnection = require("./utliz/dbConnection.js");
 const app = express();
 
@@ -13,7 +14,8 @@ app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
 app.use(morgan("tiny"));
 
-app.use(controller);
+app.use("/auth", AuthController);
+app.use("/api", CrudController);
 
 
 app.listen(port, "0.0.0.0", function () {
