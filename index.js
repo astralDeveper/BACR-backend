@@ -3,7 +3,7 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const morgan = require("morgan");
 const AuthController = require("./controllers/auth.js");
-const CrudController = require("./controllers/auth.js");
+const CrudController = require("./controllers/main.js");
 const dbconnection = require("./utliz/dbConnection.js");
 const app = express();
 
