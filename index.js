@@ -13,9 +13,10 @@ app.use(morgan("tiny"));
 
 app.use(controller);
 
-dbconnection();
 
 app.listen(3000);
 app.on("listening", ()=>{
     console.log("server is up...");
 })
+
+dbconnection();
