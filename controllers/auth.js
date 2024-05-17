@@ -61,5 +61,34 @@ route.post("/signup", checkDuplicateEmail, async (req, res) => {
   }
 });
 
+route.get("/refresh", async (req, res) => {
+  try {
+    let token = req.headers["authorization"];
 
-module.exports = route
+    if (!token) {
+      return res.status(400).json({ msg: "Bad request" });
+    }
+
+    let { _id } = JWT.verify(token, process.env.JWT_SECRET);
+
+    if (!_id) {
+      return res.status(401).json({ msg: "Authentiction faild." });
+    }
+
+    let admin = await Admin.findById(_id).select(["-password"]);
+
+    if (!admin) {
+      return res.status(400).json({ msg: "Bad request" });
+    }
+
+    let payload = {
+      admin,
+    };
+
+    return ResHandler(payload, req, res);
+  } catch (error) {
+    return ErrorHandler(error, req, res);
+  }
+});
+
+module.exports = route;
