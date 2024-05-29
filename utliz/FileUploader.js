@@ -79,6 +79,8 @@ const CardImageUploader = multer({ storage: CardsStorage }).fields([
 
 const LogoUploader = multer({ storage: multer.memoryStorage() }).single("file");
 
+const CvUploader = multer({storage:multer.memoryStorage()}).single("file");
+
 module.exports = {
   assetUploader,
   cloudinary,
@@ -88,4 +90,5 @@ module.exports = {
   testUploader,
   CardImageUploader,
   LogoUploader,
+  CvUploader
 };

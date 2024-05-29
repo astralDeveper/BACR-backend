@@ -5,12 +5,25 @@ const {
   employeImageUploader,
   docsUploader,
   CardImageUploader,
+  CvUploader,
 } = require("../utliz/FileUploader");
 const Employees = require("../models/Employe");
 const Certificates = require("../models/Certificates");
 const Cards = require("../models/Cards");
 const { verifyToken } = require("../utliz/auth");
+// const { transporter } = require("../utliz/EmailSender.js");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
+
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  auth: {
+    user: process.env.ETHEREAL_EMAIL,
+    pass: process.env.ETHEREAL_PASSWORD,
+  },
+});
 
 const route = Router();
 
@@ -189,7 +202,7 @@ route.post("/docs/upload", verifyToken, docsUploader, async (req, res) => {
 
     return ResHandler(payload, req, res);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return ErrorHandler(error, req, res);
   }
 });
@@ -296,7 +309,7 @@ route.post(
     try {
       let { id } = req.params;
       let body = req.body;
-      let file = req.files['logo'][0];
+      let file = req.files["logo"][0];
       let card = await Cards.create({ ...body, image: file });
 
       await Cards.findOneAndUpdate({ _id: id }, { $push: { items: card._id } });
@@ -404,7 +417,7 @@ route.put("/card/update/parent/:id", CardImageUploader, async (req, res) => {
     let files = Object.keys(req?.files);
 
     if (files?.length) {
-      let logo = req?.files?.logo
+      let logo = req?.files?.logo;
       let bgImg = req?.files?.bg_img;
 
       if (logo?.length) {
@@ -461,7 +474,7 @@ route.put("/card/update/child/:id", CardImageUploader, async (req, res) => {
         type: "upload",
       });
 
-      card.image = req.files['logo'][0];
+      card.image = req.files["logo"][0];
       await card.save();
     }
 
@@ -483,7 +496,7 @@ route.get("/card/:id", async (req, res) => {
   try {
     let { id } = req.params;
 
-    let card = await Cards.findOne({name:id}).populate({
+    let card = await Cards.findOne({ name: id }).populate({
       path: "items",
     });
 
@@ -492,6 +505,40 @@ route.get("/card/:id", async (req, res) => {
     };
 
     return ResHandler(payload, req, res);
+  } catch (error) {
+    return ErrorHandler(error, req, res);
+  }
+});
+
+route.post("/send-email", CvUploader, async (req, res) => {
+  try {
+    let file = req.file;
+    let data = req.body;
+
+    if (!file || !data?.fullname?.length || !data.applyingFor?.length) {
+      return res
+        .status(400)
+        .json({ msg: "Bad Request, all fields are required." });
+    }
+
+    const mailOptions = {
+      from: "bacr@gmail.com",
+      to: "assunta.hand38@ethereal.email",
+      subject: "New Job Application",
+      html: `<p>Name: ${data?.fullname}</p><p>Applying For: ${data.applyingFor}</p>`,
+      attachments: [
+        {
+          filename: file.originalname,
+          content: file.buffer,
+          contentType: file.mimetype,
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).json({msg:"Email send successfully."})
+
   } catch (error) {
     return ErrorHandler(error, req, res);
   }
