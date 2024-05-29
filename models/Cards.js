@@ -28,6 +28,7 @@ const CardsSchema = new mongoose.Schema(
       path: { type: String },
     },
     authorized: { type: Boolean },
+    webiste_url: { type: String },
     is_parent: {type:Boolean}
   },
   { timestamps: true }
