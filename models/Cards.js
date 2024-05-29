@@ -6,6 +6,7 @@ const CardsSchema = new mongoose.Schema(
     name: { type: String },
     location: { type: String },
     description: { type: String },
+    website_url: { type: String },
     features:[
       {
         type:String
