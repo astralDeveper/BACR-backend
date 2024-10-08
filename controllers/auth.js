@@ -41,6 +41,7 @@ route.post("/login", async (req, res) => {
 route.post("/signup", checkDuplicateEmail, async (req, res) => {
   try {
     let data = req.body;
+console.log(data);
 
     let password = await bcrypt.hash(data.password, 12);
 
@@ -60,6 +61,31 @@ route.post("/signup", checkDuplicateEmail, async (req, res) => {
     return ErrorHandler(error, req, res);
   }
 });
+
+route.post("/forgotpassword" , async (req, res) => {
+  try {
+    const { email, password } = req.body; // Expecting a new password from the request
+
+    const user = await Admin.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "User does not exist" });
+    }
+
+    // Generate a new hashed password
+    const hashedPassword = await bcrypt.hash(password || " ", 10); // newPassword is the user's new desired password
+    user.password = hashedPassword; // Update the user's password
+
+    await user.save(); // Save the updated user document to the database
+
+    // Inform the user of success without logging them in or sending a token
+    res.json({ message: "Password reset successfully. Please log in with your new password." , succes:true});
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
 
 route.get("/refresh", async (req, res) => {
   try {
@@ -90,5 +116,6 @@ route.get("/refresh", async (req, res) => {
     return ErrorHandler(error, req, res);
   }
 });
+
 
 module.exports = route;
